@@ -6,54 +6,62 @@ import "openzeppelin-contracts/contracts/utils/cryptography/MerkleProof.sol";
 import "openzeppelin-contracts/contracts/utils/Strings.sol";
 
 contract ERC721S is ERC721 {
+    string public baseURI;
+
+    // Merkle root for Merkle Proof verification, used for minting validation
     bytes32 public root;
-    uint256 public beginBlockNumber;
-    uint256 public endBlockNumber;
+
+    // Tracks the total number of tokens minted
     uint256 public totalSupply;
 
+    // Mapping to track whether a specific token has been minted
     mapping(bytes32 => bool) public minted;
 
-    event Mint(uint256 indexed tokenId, address indexed to);
+    // Event emitted when a new token is inscribed
+    event InscriptionIndex(uint256 indexed tokenId, address indexed to);
 
-    constructor(
-        string memory name,
-        string memory symbol,
-        bytes32 _root,
-        uint256 _beginBlockNumber,
-        uint256 _endBlockNumber
-    ) ERC721(name, symbol) {
+    // Constructor to initialize the NFT contract with necessary details
+    constructor(string memory name, string memory symbol, string memory uri, bytes32 _root) ERC721(name, symbol) {
+        require(bytes(baseURI).length > 0, "EMPTY_URI");
+        require(_root != bytes32(0), "EMPTY_ROOT");
+        baseURI = uri;
         root = _root;
-        if (_beginBlockNumber > 0) {
-            beginBlockNumber = _beginBlockNumber;
-        }
-
-        require(endBlockNumber > 0 && endBlockNumber > block.number, "END_BLOCK_NUMBER_EXPIRE");
-        require(endBlockNumber > beginBlockNumber, "END_BLOCK_NUMBER_LESS_THAN_BEGIN");
-        endBlockNumber = _endBlockNumber;
     }
 
+    // Override the _baseURI function to set the base URI for the token metadata
     function _baseURI() internal view override returns (string memory) {
-        return string.concat("https://127.0.0.1:3000/", Strings.toHexString(address(this)));
+        return baseURI;
     }
 
-    function mint(bytes calldata data, bytes32[] calldata proof, address to) external {
-        require(block.number >= beginBlockNumber, "NOT_START");
-        require(block.number <= endBlockNumber, "FINISH");
-        bytes32 leaf = keccak256(data);
-        require(!minted[leaf], "MINTED");
-        require(validate(data), "INVALID_ORD_FORMAT");
+    // Inscribe function to create new tokens
+    function inscribe(bytes calldata data, bytes32[] calldata proof, address to) external {
+        // Create a unique identifier for the data to prevent duplicate minting
+        bytes32 leaf = _inscribe(data);
 
-        if (root != bytes32(0)) {
-            require(MerkleProof.verify(proof, root, leaf), "INVALID_PROOF");
-        }
+        // Verify the provided proof against the Merkle root
+        require(MerkleProof.verify(proof, root, leaf), "INVALID_PROOF");
 
+        // Increment the total supply and mint the token
         totalSupply += 1;
         _mint(to, totalSupply);
-        emit Mint(totalSupply, to);
+        emit InscriptionIndex(totalSupply, to);
     }
 
-    function validate(bytes calldata data) internal pure returns (bool) {
+    function _inscribe(bytes calldata data) internal returns (bytes32) {
+        // Create a unique identifier for the data to prevent duplicate minting
+        bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(data))));
+        require(!minted[leaf], "MINTED");
+
+        // Validate the data format
+        require(_validate(data), "INVALID_ORD_FORMAT");
+        minted[leaf] = true;
+        return leaf;
+    }
+
+    // Function to validate the data format
+    function _validate(bytes calldata data) internal pure returns (bool) {
         uint256 len = data.length;
+        // Check for specific byte values at certain positions to validate data format
         return (
             data[0] == 0 && data[1] == 0x63 && data[2] == 0x03 && data[4] == 0x6f && data[5] == 0x72 && data[6] == 0x64
                 && data[7] == 0x01 && data[8] == 0x01 && data[len - 1] == 0x68
