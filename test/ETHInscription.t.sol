@@ -4,9 +4,9 @@ pragma solidity 0.8.20;
 import "forge-std/Test.sol";
 
 import {ETHInscription} from "../src/ETHInscription.sol";
-import {IETHInscription} from "../src/IETHInscription.sol";
+import {IETHInscription, IETHInscriptionMETA} from "../src/IETHInscription.sol";
 
-contract ETHInscriptionTest is Test, IETHInscription {
+contract ETHInscriptionTest is Test, IETHInscriptionMETA {
     ETHInscription inscriptor;
 
     function setUp() public {

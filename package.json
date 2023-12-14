@@ -13,8 +13,6 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@openzeppelin/merkle-tree": "^1.0.5",
-    "commander": "^11.1.0",
     "viem": "^1.19.11"
   }
 }
