@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import {IETHInscription} from "./IETHInscription.sol";
-import {ERC721} from 'openzeppelin-contracts/contracts/token/ERC721/ERC721.sol';
+import {ERC721} from "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 
 contract ETHInscription is IETHInscription, ERC721 {
     uint256 public inscriptionId;
