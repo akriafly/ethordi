@@ -4,9 +4,9 @@ pragma solidity 0.8.20;
 import "forge-std/Test.sol";
 
 import {ETHInscription} from "../src/ETHInscription.sol";
-import {IETHInscription, IETHInscriptionMETA} from "../src/IETHInscription.sol";
+import {IETHInscription, IETHInscriptionMeta} from "../src/IETHInscription.sol";
 
-contract ETHInscriptionTest is Test, IETHInscriptionMETA {
+contract ETHInscriptionTest is Test, IETHInscriptionMeta {
     ETHInscription inscriptor;
 
     function setUp() public {
@@ -18,7 +18,7 @@ contract ETHInscriptionTest is Test, IETHInscriptionMETA {
         vm.expectEmit(true, true, true, false);
         bytes memory test =
             hex"0063036f7264010109696d6167652f706e67004d080289504e470d0a1a0a0000000d49484452000001000000010008030000006bac5854000000a8504c5445000000184e64201c2320919020b197221e252887c72b223030437430544b3658933f2124413f4c496ea84c20234dd1a8553237572d5458333b5857655b393f5c37335c89c460c1f16a434e6fa2e376201e773528774a447a4f5a852f2f91473d943b62a53e3cac5d7cb16047bc4945c0b4c0c29d81c47757d04a8ad69471d88f60da7095e080ace16e97e3b098e3c1ace55543eabda6f07d95f1b4d3f4714bfcf7cdfcf7cfffffff41e6658500000001624b47443730b8b847000006424944415478daedddfd57134714c6715aa452ab5229b648eb4b2d8242b54835ffff9fd6b99cbd73eeccdcd9cc665f82cdf7f92521c96ef6f99ce36466b3e0debb1dcf1e000000000000000000000000000000000000306657360000000000bb04209dffb09919613a67000098e6df7c97b5007b4d1904306ee8990ba0863001807d9fc172000000c068";
-        emit Inscription(address(1), 1, keccak256(test));
+        emit Inscription(1);
         inscriptor.inscribe(test);
     }
 
@@ -27,7 +27,7 @@ contract ETHInscriptionTest is Test, IETHInscriptionMETA {
         vm.expectRevert(BadOrdinalsFormat.selector);
         bytes memory test =
             hex"0163036f7264010109696d6167652f706e67004d080289504e470d0a1a0a0000000d49484452000001000000010008030000006bac5854000000a8504c5445000000184e64201c2320919020b197221e252887c72b223030437430544b3658933f2124413f4c496ea84c20234dd1a8553237572d5458333b5857655b393f5c37335c89c460c1f16a434e6fa2e376201e773528774a447a4f5a852f2f91473d943b62a53e3cac5d7cb16047bc4945c0b4c0c29d81c47757d04a8ad69471d88f60da7095e080ace16e97e3b098e3c1ace55543eabda6f07d95f1b4d3f4714bfcf7cdfcf7cfffffff41e6658500000001624b47443730b8b847000006424944415478daedddfd57134714c6715aa452ab5229b648eb4b2d8242b54835ffff9fd6b99cbd73eeccdcd9cc665f82cdf7f92521c96ef6f99ce36466b3e0debb1dcf1e000000000000000000000000000000000000306657360000000000bb04209dffb09919613a67000098e6df7c97b5007b4d1904306ee8990ba0863001807d9fc172000000c068";
-        emit Inscription(address(1), 1, keccak256(test));
+        emit Inscription(1);
         inscriptor.inscribe(test);
     }
 }

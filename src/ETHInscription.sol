@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.20;
 
-import {IETHInscription, IETHInscriptionMETA} from "./IETHInscription.sol";
+import {IETHInscription, IETHInscriptionMeta} from "./IETHInscription.sol";
 import {ERC721} from "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 
-contract ETHInscription is IETHInscription, IETHInscriptionMETA, ERC721 {
-    uint256 public inscriptionId;
-
+contract ETHInscription is IETHInscription, IETHInscriptionMeta, ERC721 {
     string public constant baseURI = "https://ethins.xyz/";
+
+    uint256 public inscriptionId;
 
     constructor() ERC721("ETHINS", "ETHINS") {}
 
-    function inscribe(bytes calldata data) external returns (uint256 id, bytes32 hash) {
+    function inscribe(bytes calldata data) external payable returns (uint256 id, bytes32 hash) {
         if (!validate(data)) {
             revert BadOrdinalsFormat();
         }
@@ -19,8 +19,7 @@ contract ETHInscription is IETHInscription, IETHInscriptionMETA, ERC721 {
         inscriptionId += 1;
         id = inscriptionId;
         hash = keccak256(data);
-        emit Inscription(msg.sender, inscriptionId, hash);
-        _mint(msg.sender, inscriptionId);
+        emit Inscription(inscriptionId);
     }
 
     function validate(bytes calldata data) public pure returns (bool) {
